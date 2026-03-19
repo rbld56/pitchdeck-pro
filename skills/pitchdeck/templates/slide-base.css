@@ -1,0 +1,211 @@
+/* ===========================================
+   PITCHDECK PRO: MANDATORY SLIDE BASE STYLES
+   Include ENTIRE file in every presentation.
+   PDF-optimized: fixed 16:9, print-ready.
+   =========================================== */
+
+/* 1. Page setup for PDF export */
+@page {
+    size: 1920px 1080px;
+    margin: 0;
+}
+
+/* 2. Document base */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+    width: 1920px;
+    height: 100%;
+    overflow: hidden;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 3. Browser preview scaling (fits to viewport) */
+body {
+    transform-origin: top left;
+    /* JS sets: transform: scale(min(vw/1920, vh/1080)) */
+}
+
+/* 4. Slide container — each slide is exactly 1920x1080 */
+.slide {
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    page-break-after: always;
+    page-break-inside: avoid;
+}
+
+/* 5. Content container */
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-height: 100%;
+    overflow: hidden;
+    padding: var(--slide-padding, 80px);
+}
+
+/* 6. Typography defaults (FIXED sizes for print fidelity) */
+:root {
+    /* Display (Headlines) */
+    --title-size: 72px;
+    --h2-size: 56px;
+    --h3-size: 42px;
+
+    /* Body */
+    --body-size: 32px;
+    --small-size: 24px;
+    --caption-size: 20px;
+
+    /* Hero/Metric */
+    --hero-number-size: 120px;
+    --stat-number-size: 72px;
+
+    /* Spacing */
+    --slide-padding: 80px;
+    --content-gap: 40px;
+    --element-gap: 20px;
+
+    /* Animation (HTML preview only) */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --duration-normal: 0.6s;
+}
+
+/* 7. Cards and containers */
+.card, .container, .content-box {
+    max-width: 1760px; /* 1920 - 2*80 padding */
+    max-height: 920px; /* 1080 - 2*80 padding */
+}
+
+/* 8. Lists */
+.feature-list, .bullet-list {
+    gap: 16px;
+}
+.feature-list li, .bullet-list li {
+    font-size: var(--body-size);
+    line-height: 1.4;
+}
+
+/* 9. Grids */
+.grid {
+    display: grid;
+    gap: 24px;
+}
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-2x3 { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); }
+
+/* 10. Images constrained */
+img, .image-container {
+    max-width: 100%;
+    max-height: 600px;
+    object-fit: contain;
+}
+
+/* 11. Stat cards (Big Number pattern) */
+.stat-card {
+    text-align: center;
+    padding: 32px;
+}
+.stat-number {
+    font-size: var(--hero-number-size);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+.stat-label {
+    font-size: var(--small-size);
+    font-weight: 400;
+    margin-top: 12px;
+    opacity: 0.7;
+}
+
+/* 12. Split layouts */
+.split { display: flex; height: 100%; }
+.split-60-40 .split-left { flex: 0 0 60%; }
+.split-60-40 .split-right { flex: 0 0 40%; }
+.split-50-50 .split-left, .split-50-50 .split-right { flex: 0 0 50%; }
+
+/* 13. Reveal animations (HTML preview only — ignored in PDF) */
+.reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity var(--duration-normal) var(--ease-out-expo),
+                transform var(--duration-normal) var(--ease-out-expo);
+}
+.slide.visible .reveal {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* Stagger */
+.reveal:nth-child(1) { transition-delay: 0.1s; }
+.reveal:nth-child(2) { transition-delay: 0.2s; }
+.reveal:nth-child(3) { transition-delay: 0.3s; }
+.reveal:nth-child(4) { transition-delay: 0.4s; }
+
+/* ===========================================
+   PRINT STYLES — Ensure clean PDF export
+   =========================================== */
+@media print {
+    html, body {
+        width: 1920px;
+        height: auto;
+        overflow: visible;
+    }
+
+    body {
+        transform: none !important;
+    }
+
+    .slide {
+        width: 1920px;
+        height: 1080px;
+        page-break-after: always;
+        page-break-inside: avoid;
+        break-after: page;
+        break-inside: avoid;
+    }
+
+    /* Force all animations to completed state */
+    .reveal {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+
+    /* Hide navigation elements */
+    .progress-bar,
+    .nav-dots,
+    .keyboard-hint,
+    .edit-hotzone,
+    .edit-toggle {
+        display: none !important;
+    }
+
+    /* Ensure backgrounds print */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+}
+
+/* ===========================================
+   REDUCED MOTION
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+    .reveal {
+        opacity: 1;
+        transform: none;
+    }
+}
