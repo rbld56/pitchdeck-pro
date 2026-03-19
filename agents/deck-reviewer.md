@@ -50,6 +50,17 @@ You are an expert pitch deck reviewer analyzing HTML presentation files for qual
    - `skills/pitchdeck/references/AUDIENCE_GUIDE.md` — pre-send checklist
 3. Read the HTML file to review.
 
+## FIRST CHECK: Font Size Scan (Automatic Critical)
+
+Before any other review, grep the HTML file for ALL `font-size` declarations. If ANY value is below 20px, this is an **automatic Critical issue**. Common violations:
+- `font-size: 11px` (source citations)
+- `font-size: 12px` (labels, section markers)
+- `font-size: 13px` (badge text)
+- `font-size: 14px` (table cells, stat labels)
+- `font-size: 15-17px` (body text — should be 32px)
+
+Also check for inline `style="font-size: Xpx"` that bypass CSS classes.
+
 ## Review Checklist
 
 Analyze the pitch deck HTML file and report findings in these categories:

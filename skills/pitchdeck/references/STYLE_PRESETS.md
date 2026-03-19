@@ -12,6 +12,15 @@ This file contains 15 curated visual style presets optimized for pitch decks. Ea
 - No external image dependencies for signature elements
 - All colors use hex values (no `oklch`, no `color-mix` for PDF compatibility)
 
+## How to Apply a Preset
+
+1. **Copy the preset's ENTIRE `:root` block** into your HTML `<style>` — do NOT cherry-pick variables
+2. **Copy the font `@import` URL** into the `<style>` header — use BOTH Display and Body fonts
+3. **Use ONLY `--color-*` variables** in your CSS — never hardcoded hex values in HTML attributes
+4. **Apply the preset's signature elements** to at least the Cover and Ask slides (gradient mesh, decorative shapes, etc.)
+5. **VERIFY:** The generated deck uses the preset's exact colors, fonts, and atmosphere — not generic defaults
+6. **DEFAULT PRESET:** If the user doesn't choose, use **Muted Sophistication (#7)** — it works for any audience
+
 ---
 
 ## Preset Index

@@ -9,6 +9,14 @@
 > - Font sizes: body **32px min**, headlines **56-72px**, hero numbers **96-120px**
 > - Content limits are **strict** -- if exceeded, the generator MUST split into multiple slides
 
+## CRITICAL: Usage Rules
+
+- **Use ONLY CSS classes defined here.** Do NOT use inline `style=""` attributes for layout, colors, or typography.
+- Every slide **MUST** have `class="slide [type]-slide"` (e.g., `class="slide cover-slide"`)
+- Every text element **MUST** use a defined class (`slide-title`, `stat-number`, `stat-label`, `section-label`, `slide-subtitle`, `bullet-list`, etc.)
+- All colors come from `--color-*` CSS variables defined in the chosen STYLE_PRESETS.md preset — **never hardcoded hex values in HTML**
+- Exception: `style=""` is acceptable ONLY for one-off positioning (`top`, `left`), chart bar widths (`width: 85%`), or dark-slide color overrides on the Problem slide
+
 ---
 
 ## Base Slide CSS

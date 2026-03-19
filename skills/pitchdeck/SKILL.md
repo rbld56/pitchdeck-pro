@@ -17,13 +17,39 @@ Generate PDF-optimized pitch decks with 2026 design standards. Single-file HTML 
 3. **Anti-AI-Slop** -- Distinctive, human-crafted aesthetics. See [ANTI_PATTERNS.md](references/ANTI_PATTERNS.md)
 4. **Show, Don't Tell** -- Generate visual previews for style discovery, don't ask abstract questions
 
-## Design Standards (2026)
-- Body text: minimum 24pt. Headlines: 44-64pt
-- Maximum 2 fonts per deck (Display + Body)
-- AA contrast compliance (4.5:1 body, 3:1 headlines)
-- One idea per slide, max 30 words body text
-- Breathing room slides every 3-4 content slides
-- Content density limits per slide type -- see [SLIDE_TYPES.md](references/SLIDE_TYPES.md)
+## NON-NEGOTIABLE RULES
+
+Violating ANY of these produces unacceptable output. These rules are absolute.
+
+### Font Sizes (1920x1080px fixed dimensions)
+ABSOLUTE MINIMUMS — going below makes the deck unreadable at presentation scale:
+- Hero/metric numbers: **96-120px**
+- Slide titles (h2): **56-72px**
+- Body text, bullets, table cells: **32px**
+- Labels, captions, sources: **24px**
+- **NOTHING below 20px. Ever.** Not footnotes, not source citations, not badge text.
+
+### CSS Architecture
+- **MUST** copy the chosen preset's ENTIRE `:root` block from [STYLE_PRESETS.md](references/STYLE_PRESETS.md) into `<style>`
+- **MUST** include the FULL contents of [slide-base.css](templates/slide-base.css) in `<style>`
+- **MUST** use `--color-*` CSS variables from the preset for ALL colors — never hardcoded hex in HTML
+- **MUST** use CSS classes from [SLIDE_TYPES.md](references/SLIDE_TYPES.md) — NOT inline `style=""` attributes
+- Inline `style=""` is **FORBIDDEN** except for one-off positioning (top/left) or chart bar widths
+- Every slide **MUST** have `class="slide [type]-slide"` (e.g., `class="slide cover-slide"`)
+
+### Visual Quality
+- **NEVER** use `#FFFFFF` as background. Use the preset's `--color-bg` (off-white/dark)
+- **NEVER** use `#000000` as text. Use `--color-text-primary` (near-black)
+- **MUST** use 2 fonts: Display font for headlines + Body font for text (from the preset's font pairing)
+- **MUST** include at least 1 atmospheric element per deck (gradient mesh, noise texture, or CSS decorative shape)
+- **MUST** include breathing room slides (quote, single stat, or section divider) every 3-4 content slides
+- Accent color used consistently on key metrics and CTAs only — not on every element
+
+### Content Density
+- Max **30 words** body text per slide (presenter mode) / **75 words** (async/PDF)
+- Max **6 bullet points** per slide
+- If content exceeds limits: **SPLIT into multiple slides**, never cram
+- One core idea per slide — the "Icon-and-Number" test must pass
 
 ---
 
@@ -116,9 +142,20 @@ Generate HTML skeleton for layout control. For complex slides (Market Size, How 
 ### Key Requirements
 - Single self-contained HTML file, all CSS/JS inline
 - Include FULL contents of slide-base.css in the style block
-- Fonts via Google Fonts @import (never system fonts)
+- Copy the chosen preset's ENTIRE :root block (do NOT invent your own CSS variables)
+- Fonts via Google Fonts @import — use BOTH the Display and Body font from the preset
 - Every section: clear `/* === SECTION NAME === */` comment
 - Design must work statically (no JS dependencies for layout)
+- Use CSS classes from SLIDE_TYPES.md for every slide — no inline style soup
+
+### Generation Checklist (verify BEFORE writing the HTML file)
+Before outputting, mentally verify EVERY slide against these 5 checks:
+1. **Font check:** Is the smallest text on this slide >= 20px? Are titles >= 56px?
+2. **Class check:** Does this slide use CSS classes (not inline styles)?
+3. **Variable check:** Does this slide use `--color-*` variables from the preset?
+4. **Density check:** Is there <= 30 words of body text? <= 6 bullets?
+5. **Investor check:** Would an investor grasp this slide in 5 seconds?
+If ANY check fails, fix it before generating.
 
 ---
 

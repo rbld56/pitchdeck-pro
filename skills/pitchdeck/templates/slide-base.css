@@ -108,6 +108,43 @@ img, .image-container {
     object-fit: contain;
 }
 
+/* ===========================================
+   11. FONT SIZE ENFORCEMENT
+   Nothing in a slide should ever be below 20px.
+   This acts as a safety net even if the generator
+   uses wrong values.
+   =========================================== */
+.slide p,
+.slide li,
+.slide td,
+.slide th,
+.slide span,
+.slide label,
+.slide cite,
+.slide small {
+    font-size: max(var(--body-size, 32px), 20px);
+}
+
+.slide .source-citation,
+.slide .slide-footer,
+.slide .slide-footer span {
+    font-size: max(var(--caption-size, 20px), 20px);
+}
+
+/* Stat numbers must be large */
+.stat-number {
+    font-size: max(var(--stat-number-size, 72px), 48px);
+}
+
+/* Headings must be large */
+.slide-title, .slide h2 {
+    font-size: max(var(--h2-size, 56px), 48px);
+}
+
+.slide h3 {
+    font-size: max(var(--h3-size, 42px), 36px);
+}
+
 /* 11. Stat cards (Big Number pattern) */
 .stat-card {
     text-align: center;
