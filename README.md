@@ -8,7 +8,7 @@ State-of-the-art pitch deck generator for Claude Code. Creates PDF-optimized HTM
 - **VC-structure templates** — YC (10-12 slides), Sequoia (15-20), a16z (insight-driven)
 - **Audience adaptation** — VC investors, B2B enterprise, board/C-level, DACH
 - **Industry presets** — Fintech, HealthTech, AI/ML, SaaS, Consumer, DeepTech
-- **MCP-powered graphics** — Canva infographics, HuggingFace AI images, Mermaid diagrams
+- **MCP-powered graphics** — Canva infographics, Nano Banana 2 (Gemini) images, FLUX.2 photorealistic visuals, Google Whisk style-remixing
 - **PDF-first** — Fixed 16:9 (1920x1080px), print-optimized CSS, works without animation
 - **PPT conversion** — Convert existing .pptx files to styled web presentations
 - **Anti-AI-slop** — Distinctive designs that avoid generic AI aesthetics
@@ -48,7 +48,9 @@ The skill guides you through:
 - [Claude Code](https://claude.ai/claude-code) CLI
 - For PPT conversion: Python with `python-pptx` (`pip install python-pptx`)
 - For Canva graphics: Canva MCP connector configured
-- For AI images: HuggingFace MCP connector configured
+- For AI images (Nano Banana 2): `pip install google-genai` + `GEMINI_API_KEY` env var
+- For AI images (FLUX.2): `pip install requests` + `BFL_API_KEY` env var
+- For style-remixing (Google Whisk): Playwright MCP plugin configured
 
 ## Architecture
 
@@ -63,7 +65,7 @@ Progressive disclosure — the main SKILL.md is a concise workflow map, with sup
 | `DATA_VISUALIZATION.md` | Charts, stats, metrics | Phase 3 |
 | `AUDIENCE_GUIDE.md` | Audience adaptation | Phase 1, 5 |
 | `ANTI_PATTERNS.md` | What to avoid | Always |
-| `MCP_GRAPHICS_GUIDE.md` | Canva/HF/Mermaid | Phase 3 (if graphics) |
+| `MCP_GRAPHICS_GUIDE.md` | Canva/NanoBanana2/FLUX.2/Whisk | Phase 3 (if graphics) |
 | `slide-base.css` | PDF-optimized CSS | Phase 3 |
 | `html-template.md` | HTML architecture | Phase 3 |
 
