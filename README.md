@@ -15,18 +15,14 @@ State-of-the-art pitch deck generator for Claude Code. Creates PDF-optimized HTM
 
 ## Installation
 
-```bash
-# Clone the plugin
-git clone <repo-url> pitchdeck-pro
-
-# Use with Claude Code
-claude --plugin-dir /path/to/pitchdeck-pro
+**Via Claude Code Marketplace (empfohlen):**
+```
+/install rbld56/pitchdeck-pro
 ```
 
-Or install as a global plugin:
-
+**Oder lokal:**
 ```bash
-cp -r pitchdeck-pro ~/.claude/plugins/pitchdeck-pro
+claude --plugin-dir /path/to/pitchdeck-pro
 ```
 
 ## Usage
@@ -40,7 +36,7 @@ cp -r pitchdeck-pro ~/.claude/plugins/pitchdeck-pro
 The skill guides you through:
 1. **Content & Audience** — Who is this for? What structure?
 2. **Style Discovery** — Pick from visual previews (show, don't tell)
-3. **Generation** — HTML with optional Canva/HF graphics
+3. **Generation** — HTML with optional Canva/NanoBanana2/FLUX.2/Whisk graphics
 4. **PDF Export** — Browser print or automated export
 
 ## Prerequisites
