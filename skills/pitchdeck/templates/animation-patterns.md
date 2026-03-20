@@ -1,15 +1,21 @@
-# Animation Patterns Reference (HTML Preview Only)
+# Animation Patterns Reference
 
-These animations are for the HTML preview experience. They are automatically disabled in PDF output via `@media print` in slide-base.css.
+## Mode Behavior
 
-## When to Animate
+- **PDF Mode:** Animations are disabled via `@media print` in slide-base.css. Design must work statically. These patterns are still useful as they degrade gracefully.
+- **HTML Interactive Mode:** Animations are **THE feature**. Every content slide should use reveal animations. Scroll-driven effects, animated counters, and interactive hover states are expected and encouraged. Use ALL patterns in this file.
 
-Animation should ONLY be used to:
-1. Direct the eye to a specific data point
-2. Show a relationship between two objects
-3. Signal a major shift in the narrative
+## When to Animate (HTML Mode)
 
-**Animations for pure visual appeal DISTRACT.** Use motion sparingly and purposefully.
+In HTML Interactive mode, animation is not decoration — it IS the experience:
+1. **Every content element** should reveal on slide entry (`.reveal`, `.reveal-scale`, `.reveal-left`)
+2. **Metrics and numbers** should use animated counters (count from 0 to value)
+3. **Charts** should draw/grow into view
+4. **Navigation** should feel smooth (scroll-snap + progress bar)
+5. **Hover states** on cards and interactive elements add depth
+6. Use **staggered delays** for sequential content (0.1s increments)
+
+In PDF mode, these same classes simply show all content immediately.
 
 ## Timing Standards
 
@@ -141,3 +147,119 @@ All animations automatically resolve to their end state in PDF:
 ```
 
 This is already included in slide-base.css — no additional print styles needed in animation code.
+
+---
+
+## HTML Interactive Mode: Advanced Patterns
+
+These patterns are specifically for HTML Interactive mode. They require JavaScript and/or CSS 2026 features.
+
+### Animated Counter (Traction/Metric slides)
+
+```javascript
+/* Animates a number from 0 to target value on slide entry */
+function animateCounter(element, target, duration = 1500, prefix = '', suffix = '') {
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const start = performance.now();
+                function update(now) {
+                    const progress = Math.min((now - start) / duration, 1);
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    element.textContent = prefix + Math.floor(target * eased).toLocaleString('de-DE') + suffix;
+                    if (progress < 1) requestAnimationFrame(update);
+                }
+                requestAnimationFrame(update);
+                observer.unobserve(element);
+            }
+        });
+    }, { threshold: 0.5 });
+    observer.observe(element);
+}
+
+// Usage:
+// animateCounter(document.querySelector('.revenue'), 2400000, 1500, '€', '');
+// animateCounter(document.querySelector('.growth'), 142, 1200, '', '%');
+```
+
+### Scroll-Driven Progress Bar (CSS-only, Chrome 115+, Safari 18+)
+
+```css
+.progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: var(--color-accent);
+    z-index: 10000;
+    transform-origin: left;
+    animation: progress-grow linear;
+    animation-timeline: scroll(root);
+}
+@keyframes progress-grow {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+}
+```
+
+### 3D Card Tilt on Hover
+
+```javascript
+document.querySelectorAll('.tilt-card').forEach(card => {
+    card.style.transformStyle = 'preserve-3d';
+    card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transform = `perspective(800px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg)`;
+    });
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(800px) rotateY(0) rotateX(0)';
+    });
+});
+```
+
+### Gradient Shift Background (subtle color animation)
+
+```css
+@keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.gradient-shift-bg {
+    background: linear-gradient(135deg,
+        var(--color-accent-muted),
+        var(--color-bg),
+        var(--color-success-muted, rgba(56,161,105,0.1))
+    );
+    background-size: 200% 200%;
+    animation: gradient-shift 15s ease infinite;
+}
+```
+
+### Typewriter Effect (for taglines)
+
+```css
+.typewriter {
+    overflow: hidden;
+    border-right: 3px solid var(--color-accent);
+    white-space: nowrap;
+    animation: typing 2s steps(40) 0.5s both, blink-caret 0.8s step-end infinite;
+    width: 0;
+}
+@keyframes typing { from { width: 0; } to { width: 100%; } }
+@keyframes blink-caret { 50% { border-color: transparent; } }
+```
+
+### Bar Chart Growth Animation
+
+```css
+.bar-fill {
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 0.8s var(--ease-out-expo);
+}
+.slide.visible .bar-fill {
+    transform: scaleX(1);
+}
+```

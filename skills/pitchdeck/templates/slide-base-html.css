@@ -1,0 +1,1425 @@
+/* ===========================================
+   PITCHDECK PRO: HTML INTERACTIVE MODE
+   Viewport-based, scroll-snap, animated.
+   For live presentations, screen-share, web.
+
+   Counterpart to slide-base.css (PDF mode).
+   This file targets responsive browser viewing
+   with scroll-driven navigation and animations.
+   =========================================== */
+
+
+/* ===========================================
+   1. VIEWPORT LOCK
+   Lock html/body to viewport, enable scroll-snap
+   =========================================== */
+
+html {
+    height: 100%;
+    overflow-x: hidden;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+
+/* ===========================================
+   2. DESIGN TOKENS (CSS Custom Properties)
+   All sizing uses clamp() for fluid scaling
+   =========================================== */
+
+:root {
+    /* Typography scale */
+    --title-size: clamp(2rem, 5vw, 4.5rem);
+    --h2-size: clamp(1.75rem, 4vw, 3.5rem);
+    --h3-size: clamp(1.25rem, 3vw, 2.5rem);
+    --body-size: clamp(0.95rem, 1.5vw, 1.5rem);
+    --small-size: clamp(0.8rem, 1.2vw, 1.125rem);
+    --caption-size: clamp(0.7rem, 1vw, 0.95rem);
+
+    /* Feature sizes */
+    --hero-number-size: clamp(3rem, 8vw, 7.5rem);
+    --stat-number-size: clamp(2rem, 5vw, 4.5rem);
+
+    /* Spacing */
+    --slide-padding: clamp(1.5rem, 4vw, 5rem);
+    --content-gap: clamp(1rem, 2.5vw, 2.5rem);
+    --element-gap: clamp(0.5rem, 1.5vw, 1.5rem);
+
+    /* Animation timing */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+    --duration-fast: 0.3s;
+    --duration-normal: 0.6s;
+    --duration-slow: 1s;
+    --duration-glacial: 1.5s;
+
+    /* Stagger base delay */
+    --stagger-base: 0.1s;
+}
+
+
+/* ===========================================
+   3. SLIDE CONTAINER
+   Each slide fills exact viewport height
+   =========================================== */
+
+.slide {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-sizing: border-box;
+}
+
+/* Slide background layers (gradient, image, overlay) */
+.slide-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.slide-bg-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+
+/* ===========================================
+   4. CONTENT CONTAINER
+   Flex layout centers content vertically
+   =========================================== */
+
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-height: 100%;
+    overflow: hidden;
+    padding: var(--slide-padding);
+    position: relative;
+    z-index: 2;
+    box-sizing: border-box;
+}
+
+.slide-content-top {
+    justify-content: flex-start;
+    padding-top: calc(var(--slide-padding) * 1.5);
+}
+
+.slide-content-bottom {
+    justify-content: flex-end;
+    padding-bottom: calc(var(--slide-padding) * 1.5);
+}
+
+.slide-content-spread {
+    justify-content: space-between;
+}
+
+
+/* ===========================================
+   5. TYPOGRAPHY
+   Fluid sizes via clamp(), no fixed px
+   =========================================== */
+
+.slide h1,
+.slide .title {
+    font-size: var(--title-size);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin: 0 0 var(--element-gap) 0;
+}
+
+.slide h2,
+.slide .subtitle {
+    font-size: var(--h2-size);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin: 0 0 var(--element-gap) 0;
+}
+
+.slide h3,
+.slide .heading-3 {
+    font-size: var(--h3-size);
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    margin: 0 0 var(--element-gap) 0;
+}
+
+.slide p,
+.slide .body-text {
+    font-size: var(--body-size);
+    line-height: 1.6;
+    margin: 0 0 var(--element-gap) 0;
+}
+
+.slide .small-text {
+    font-size: var(--small-size);
+    line-height: 1.5;
+}
+
+.slide .caption {
+    font-size: var(--caption-size);
+    line-height: 1.4;
+    opacity: 0.7;
+}
+
+.hero-number {
+    font-size: var(--hero-number-size);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.05em;
+}
+
+.slide .text-balance {
+    text-wrap: balance;
+}
+
+.slide .text-pretty {
+    text-wrap: pretty;
+}
+
+
+/* ===========================================
+   6. CARDS AND CONTAINERS
+   Constrained to viewport-relative maximums
+   =========================================== */
+
+.card,
+.container,
+.content-box {
+    max-width: min(90vw, 1200px);
+    max-height: min(80vh, 800px);
+    box-sizing: border-box;
+}
+
+.card {
+    padding: clamp(1rem, 2.5vw, 2.5rem);
+    border-radius: clamp(0.5rem, 1vw, 1rem);
+    overflow: hidden;
+}
+
+.content-box {
+    padding: clamp(0.75rem, 2vw, 2rem);
+}
+
+.container-narrow {
+    max-width: min(75vw, 900px);
+    margin-inline: auto;
+}
+
+.container-wide {
+    max-width: min(95vw, 1400px);
+    margin-inline: auto;
+}
+
+
+/* ===========================================
+   7. LISTS
+   Feature and bullet lists with fluid gaps
+   =========================================== */
+
+.feature-list,
+.bullet-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.5rem, 1.2vh, 1.25rem);
+}
+
+.feature-list li,
+.bullet-list li {
+    font-size: var(--body-size);
+    line-height: 1.5;
+    padding-left: 1.5em;
+    position: relative;
+}
+
+.bullet-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.6em;
+    width: 0.4em;
+    height: 0.4em;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.5;
+}
+
+.feature-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.35em;
+    width: 0.65em;
+    height: 0.65em;
+    border-radius: 0.15em;
+    background: var(--color-accent, #2D5BFF);
+    opacity: 0.8;
+}
+
+/* Numbered lists */
+.numbered-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: list-counter;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.5rem, 1.2vh, 1.25rem);
+}
+
+.numbered-list li {
+    font-size: var(--body-size);
+    line-height: 1.5;
+    padding-left: 2em;
+    position: relative;
+    counter-increment: list-counter;
+}
+
+.numbered-list li::before {
+    content: counter(list-counter);
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-weight: 700;
+    font-size: 0.9em;
+    color: var(--color-accent, #2D5BFF);
+    width: 1.5em;
+    text-align: center;
+}
+
+
+/* ===========================================
+   8. GRID LAYOUTS
+   Responsive grids with fluid gaps
+   =========================================== */
+
+.grid {
+    display: grid;
+    gap: var(--element-gap);
+    width: 100%;
+}
+
+.grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.grid-2x2 {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+}
+
+.grid-2x3 {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+}
+
+.grid-auto-fit {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+}
+
+.grid-auto-fill {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+}
+
+
+/* ===========================================
+   9. IMAGES AND MEDIA
+   Constrained to viewport-relative maximums
+   =========================================== */
+
+img,
+.image-container {
+    max-width: 100%;
+    max-height: min(50vh, 500px);
+    object-fit: contain;
+}
+
+.image-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.image-cover {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.image-fill {
+    max-height: min(70vh, 700px);
+}
+
+/* Icon containers */
+.icon-container {
+    width: clamp(2.5rem, 5vw, 4.5rem);
+    height: clamp(2.5rem, 5vw, 4.5rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.icon-container svg,
+.icon-container img {
+    max-width: 70%;
+    max-height: 70%;
+}
+
+
+/* ===========================================
+   10. SPLIT LAYOUTS
+   Two-column layouts with flexible ratios
+   =========================================== */
+
+.split {
+    display: flex;
+    height: 100%;
+    gap: var(--content-gap);
+    align-items: center;
+}
+
+.split-left,
+.split-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.split-60-40 .split-left {
+    flex: 0 0 58%;
+}
+
+.split-60-40 .split-right {
+    flex: 0 0 38%;
+}
+
+.split-50-50 .split-left,
+.split-50-50 .split-right {
+    flex: 0 0 48%;
+}
+
+.split-40-60 .split-left {
+    flex: 0 0 38%;
+}
+
+.split-40-60 .split-right {
+    flex: 0 0 58%;
+}
+
+.split-70-30 .split-left {
+    flex: 0 0 67%;
+}
+
+.split-70-30 .split-right {
+    flex: 0 0 29%;
+}
+
+.split-align-top {
+    align-items: flex-start;
+}
+
+.split-align-stretch {
+    align-items: stretch;
+}
+
+
+/* ===========================================
+   11. STAT CARDS
+   Numeric emphasis components
+   =========================================== */
+
+.stat-card {
+    text-align: center;
+    padding: clamp(1rem, 2vw, 2rem);
+}
+
+.stat-number {
+    font-size: var(--stat-number-size);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: var(--small-size);
+    font-weight: 400;
+    margin-top: 0.5rem;
+    opacity: 0.7;
+}
+
+.stat-unit {
+    font-size: 0.5em;
+    font-weight: 600;
+    opacity: 0.8;
+    vertical-align: super;
+}
+
+.stat-change {
+    font-size: var(--caption-size);
+    font-weight: 600;
+    margin-top: 0.25rem;
+}
+
+.stat-change-positive {
+    color: var(--color-success, #22c55e);
+}
+
+.stat-change-negative {
+    color: var(--color-danger, #ef4444);
+}
+
+
+/* ===========================================
+   12. TIMELINE COMPONENT
+   Vertical timeline for roadmap slides
+   =========================================== */
+
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: var(--element-gap);
+    padding-left: 2rem;
+    position: relative;
+}
+
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 0.5rem;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    width: 2px;
+    background: var(--color-border, rgba(128, 128, 128, 0.3));
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 1rem;
+}
+
+.timeline-item::before {
+    content: "";
+    position: absolute;
+    left: calc(-2rem + 0.25rem);
+    top: 0.5em;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: var(--color-accent, #2D5BFF);
+    border: 2px solid var(--color-bg, #fff);
+    z-index: 1;
+}
+
+.timeline-date {
+    font-size: var(--caption-size);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.6;
+    margin-bottom: 0.25rem;
+}
+
+
+/* ===========================================
+   13. BADGE AND TAG COMPONENTS
+   =========================================== */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    font-size: var(--caption-size);
+    font-weight: 600;
+    padding: 0.25em 0.75em;
+    border-radius: 100vw;
+    line-height: 1.4;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    font-size: var(--caption-size);
+    font-weight: 500;
+    padding: 0.2em 0.6em;
+    border-radius: 0.25rem;
+    line-height: 1.4;
+}
+
+
+/* ===========================================
+   14. QUOTE / TESTIMONIAL
+   =========================================== */
+
+.blockquote,
+.testimonial-quote {
+    font-size: var(--h3-size);
+    font-style: italic;
+    line-height: 1.4;
+    position: relative;
+    padding-left: clamp(1rem, 2vw, 2rem);
+    border-left: 3px solid var(--color-accent, #2D5BFF);
+}
+
+.testimonial-author {
+    font-size: var(--small-size);
+    font-style: normal;
+    font-weight: 600;
+    margin-top: var(--element-gap);
+    opacity: 0.8;
+}
+
+.testimonial-role {
+    font-size: var(--caption-size);
+    font-style: normal;
+    font-weight: 400;
+    opacity: 0.6;
+}
+
+
+/* ===========================================
+   15. TABLE COMPONENT
+   =========================================== */
+
+.slide-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--body-size);
+}
+
+.slide-table th,
+.slide-table td {
+    padding: clamp(0.4rem, 1vw, 0.75rem) clamp(0.5rem, 1.5vw, 1.25rem);
+    text-align: left;
+}
+
+.slide-table th {
+    font-weight: 700;
+    font-size: var(--small-size);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.7;
+    border-bottom: 2px solid var(--color-border, rgba(128, 128, 128, 0.2));
+}
+
+.slide-table td {
+    border-bottom: 1px solid var(--color-border, rgba(128, 128, 128, 0.1));
+}
+
+
+/* ===========================================
+   16. DECORATIVE ELEMENTS
+   Background shapes, gradients, blurs
+   =========================================== */
+
+.decorative {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.decorative-blob {
+    border-radius: 50%;
+    filter: blur(clamp(40px, 8vw, 120px));
+    opacity: 0.15;
+}
+
+.decorative-grid {
+    opacity: 0.04;
+    background-size: clamp(30px, 4vw, 60px) clamp(30px, 4vw, 60px);
+    background-image:
+        linear-gradient(to right, currentColor 1px, transparent 1px),
+        linear-gradient(to bottom, currentColor 1px, transparent 1px);
+}
+
+.decorative-gradient-line {
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--color-accent, #2D5BFF),
+        transparent
+    );
+    opacity: 0.3;
+}
+
+
+/* ===========================================
+   17. SLIDE NUMBER / FOOTER
+   =========================================== */
+
+.slide-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: clamp(0.5rem, 1.5vw, 1.25rem) var(--slide-padding);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--caption-size);
+    opacity: 0.5;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.slide-number {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+}
+
+
+/* ===========================================
+   ANIMATIONS (ACTIVE in HTML mode)
+   These are the primary feature of this mode.
+   JS adds .visible to slides in viewport.
+   =========================================== */
+
+
+/* --- Fade + Slide Up (default reveal) --- */
+
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition:
+        opacity var(--duration-normal) var(--ease-out-expo),
+        transform var(--duration-normal) var(--ease-out-expo);
+}
+
+.slide.visible .reveal {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* --- Scale In --- */
+
+.reveal-scale {
+    opacity: 0;
+    transform: scale(0.92);
+    transition:
+        opacity var(--duration-normal) var(--ease-out-expo),
+        transform var(--duration-normal) var(--ease-out-expo);
+}
+
+.slide.visible .reveal-scale {
+    opacity: 1;
+    transform: scale(1);
+}
+
+
+/* --- Slide from Left --- */
+
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-50px);
+    transition:
+        opacity var(--duration-normal) var(--ease-out-expo),
+        transform var(--duration-normal) var(--ease-out-expo);
+}
+
+.slide.visible .reveal-left {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+
+/* --- Slide from Right --- */
+
+.reveal-right {
+    opacity: 0;
+    transform: translateX(50px);
+    transition:
+        opacity var(--duration-normal) var(--ease-out-expo),
+        transform var(--duration-normal) var(--ease-out-expo);
+}
+
+.slide.visible .reveal-right {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+
+/* --- Blur In --- */
+
+.reveal-blur {
+    opacity: 0;
+    filter: blur(12px);
+    transition:
+        opacity 0.8s var(--ease-out-expo),
+        filter 0.8s var(--ease-out-expo);
+}
+
+.slide.visible .reveal-blur {
+    opacity: 1;
+    filter: blur(0);
+}
+
+
+/* --- Fade In (no transform) --- */
+
+.reveal-fade {
+    opacity: 0;
+    transition: opacity var(--duration-slow) var(--ease-out-expo);
+}
+
+.slide.visible .reveal-fade {
+    opacity: 1;
+}
+
+
+/* --- Flip In (Y-axis) --- */
+
+.reveal-flip {
+    opacity: 0;
+    transform: perspective(800px) rotateY(25deg);
+    transition:
+        opacity var(--duration-normal) var(--ease-out-expo),
+        transform var(--duration-slow) var(--ease-out-expo);
+}
+
+.slide.visible .reveal-flip {
+    opacity: 1;
+    transform: perspective(800px) rotateY(0);
+}
+
+
+/* --- Slide Down --- */
+
+.reveal-down {
+    opacity: 0;
+    transform: translateY(-30px);
+    transition:
+        opacity var(--duration-normal) var(--ease-out-expo),
+        transform var(--duration-normal) var(--ease-out-expo);
+}
+
+.slide.visible .reveal-down {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* --- Zoom + Blur --- */
+
+.reveal-zoom-blur {
+    opacity: 0;
+    transform: scale(1.15);
+    filter: blur(8px);
+    transition:
+        opacity var(--duration-slow) var(--ease-out-expo),
+        transform var(--duration-slow) var(--ease-out-expo),
+        filter var(--duration-slow) var(--ease-out-expo);
+}
+
+.slide.visible .reveal-zoom-blur {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+}
+
+
+/* ===========================================
+   STAGGER DELAYS
+   Sequential reveal of child elements
+   =========================================== */
+
+/* Generic stagger for all reveal variants */
+.reveal:nth-child(1), .reveal-scale:nth-child(1),
+.reveal-left:nth-child(1), .reveal-right:nth-child(1),
+.reveal-blur:nth-child(1), .reveal-fade:nth-child(1),
+.reveal-flip:nth-child(1), .reveal-down:nth-child(1) {
+    transition-delay: calc(var(--stagger-base) * 1);
+}
+
+.reveal:nth-child(2), .reveal-scale:nth-child(2),
+.reveal-left:nth-child(2), .reveal-right:nth-child(2),
+.reveal-blur:nth-child(2), .reveal-fade:nth-child(2),
+.reveal-flip:nth-child(2), .reveal-down:nth-child(2) {
+    transition-delay: calc(var(--stagger-base) * 2);
+}
+
+.reveal:nth-child(3), .reveal-scale:nth-child(3),
+.reveal-left:nth-child(3), .reveal-right:nth-child(3),
+.reveal-blur:nth-child(3), .reveal-fade:nth-child(3),
+.reveal-flip:nth-child(3), .reveal-down:nth-child(3) {
+    transition-delay: calc(var(--stagger-base) * 3);
+}
+
+.reveal:nth-child(4), .reveal-scale:nth-child(4),
+.reveal-left:nth-child(4), .reveal-right:nth-child(4),
+.reveal-blur:nth-child(4), .reveal-fade:nth-child(4),
+.reveal-flip:nth-child(4), .reveal-down:nth-child(4) {
+    transition-delay: calc(var(--stagger-base) * 4);
+}
+
+.reveal:nth-child(5), .reveal-scale:nth-child(5),
+.reveal-left:nth-child(5), .reveal-right:nth-child(5),
+.reveal-blur:nth-child(5), .reveal-fade:nth-child(5),
+.reveal-flip:nth-child(5), .reveal-down:nth-child(5) {
+    transition-delay: calc(var(--stagger-base) * 5);
+}
+
+.reveal:nth-child(6), .reveal-scale:nth-child(6),
+.reveal-left:nth-child(6), .reveal-right:nth-child(6),
+.reveal-blur:nth-child(6), .reveal-fade:nth-child(6),
+.reveal-flip:nth-child(6), .reveal-down:nth-child(6) {
+    transition-delay: calc(var(--stagger-base) * 6);
+}
+
+.reveal:nth-child(7), .reveal-scale:nth-child(7),
+.reveal-left:nth-child(7), .reveal-right:nth-child(7) {
+    transition-delay: calc(var(--stagger-base) * 7);
+}
+
+.reveal:nth-child(8), .reveal-scale:nth-child(8),
+.reveal-left:nth-child(8), .reveal-right:nth-child(8) {
+    transition-delay: calc(var(--stagger-base) * 8);
+}
+
+/* Explicit stagger utility classes (override nth-child) */
+.delay-1 { transition-delay: 0.1s !important; }
+.delay-2 { transition-delay: 0.2s !important; }
+.delay-3 { transition-delay: 0.3s !important; }
+.delay-4 { transition-delay: 0.4s !important; }
+.delay-5 { transition-delay: 0.5s !important; }
+.delay-6 { transition-delay: 0.6s !important; }
+.delay-7 { transition-delay: 0.7s !important; }
+.delay-8 { transition-delay: 0.8s !important; }
+
+
+/* ===========================================
+   KEYFRAME ANIMATIONS
+   For continuous/looping effects
+   =========================================== */
+
+@keyframes pulse-glow {
+    0%, 100% { opacity: 0.15; transform: scale(1); }
+    50% { opacity: 0.25; transform: scale(1.05); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+}
+
+@keyframes rotate-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes count-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Utility classes for keyframe animations */
+.animate-pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-float {
+    animation: float 4s ease-in-out infinite;
+}
+
+.animate-shimmer {
+    background-size: 200% auto;
+    animation: shimmer 3s linear infinite;
+}
+
+.animate-rotate-slow {
+    animation: rotate-slow 20s linear infinite;
+}
+
+
+/* ===========================================
+   SCROLL-DRIVEN ANIMATIONS (CSS 2024+)
+   Progressive enhancement for modern browsers.
+   Chrome 115+, Safari 18+, Firefox 110+ (flag).
+   =========================================== */
+
+/* Progress bar driven by document scroll position */
+.progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--color-accent, #2D5BFF);
+    z-index: 10000;
+    transform-origin: left;
+    animation: progress-grow linear;
+    animation-timeline: scroll(root);
+}
+
+@keyframes progress-grow {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+}
+
+/* Slide-scoped view transitions (per-slide parallax) */
+@supports (animation-timeline: view()) {
+    .parallax-bg {
+        animation: parallax-shift linear;
+        animation-timeline: view();
+    }
+
+    @keyframes parallax-shift {
+        from { transform: translateY(-5%); }
+        to { transform: translateY(5%); }
+    }
+
+    .scroll-fade-in {
+        animation: scroll-reveal linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 40%;
+    }
+
+    @keyframes scroll-reveal {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+}
+
+
+/* ===========================================
+   NAVIGATION UI
+   Fixed overlays for progress and slide nav
+   =========================================== */
+
+/* Navigation dots (right side) */
+.nav-dots {
+    position: fixed;
+    right: clamp(12px, 2vw, 24px);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 9999;
+}
+
+.nav-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--color-text-secondary, #888);
+    background: transparent;
+    cursor: pointer;
+    transition: all var(--duration-fast) ease;
+    padding: 0;
+    outline: none;
+}
+
+.nav-dot:hover {
+    border-color: var(--color-accent, #2D5BFF);
+    transform: scale(1.2);
+}
+
+.nav-dot:focus-visible {
+    outline: 2px solid var(--color-accent, #2D5BFF);
+    outline-offset: 3px;
+}
+
+.nav-dot.active {
+    background: var(--color-accent, #2D5BFF);
+    border-color: var(--color-accent, #2D5BFF);
+    transform: scale(1.3);
+}
+
+/* Navigation dot tooltip (slide title on hover) */
+.nav-dot[data-tooltip]::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: calc(100% + 12px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--color-surface, rgba(0, 0, 0, 0.8));
+    color: var(--color-text-on-surface, #fff);
+    padding: 0.3em 0.7em;
+    border-radius: 0.3em;
+    font-size: var(--caption-size);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.nav-dot[data-tooltip]:hover::before {
+    opacity: 1;
+}
+
+/* Keyboard hint overlay */
+.keyboard-hint {
+    position: fixed;
+    bottom: clamp(12px, 2vw, 24px);
+    right: clamp(12px, 2vw, 24px);
+    font-size: var(--caption-size);
+    color: var(--color-text-muted, #999);
+    opacity: 0.6;
+    z-index: 9998;
+    pointer-events: none;
+    transition: opacity var(--duration-normal) ease;
+}
+
+/* Hide keyboard hint after first interaction */
+.keyboard-hint.hidden {
+    opacity: 0;
+}
+
+/* Slide counter */
+.slide-counter {
+    position: fixed;
+    bottom: clamp(12px, 2vw, 24px);
+    left: clamp(12px, 2vw, 24px);
+    font-size: var(--caption-size);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-muted, #999);
+    opacity: 0.6;
+    z-index: 9998;
+    pointer-events: none;
+}
+
+.slide-counter-current {
+    font-weight: 700;
+    color: var(--color-text, inherit);
+    opacity: 1;
+}
+
+
+/* ===========================================
+   FULLSCREEN MODE
+   Adjustments when entering browser fullscreen
+   =========================================== */
+
+:fullscreen .nav-dots {
+    right: clamp(16px, 2vw, 32px);
+}
+
+:fullscreen .progress-bar {
+    height: 4px;
+}
+
+
+/* ===========================================
+   RESPONSIVE BREAKPOINTS
+   Height-based for landscape, width for portrait
+   =========================================== */
+
+/* Short viewports (laptops, compact screens) */
+@media (max-height: 700px) {
+    :root {
+        --slide-padding: clamp(1rem, 3vw, 2.5rem);
+        --content-gap: clamp(0.5rem, 1.5vw, 1.25rem);
+        --title-size: clamp(1.5rem, 4.5vw, 3rem);
+        --h2-size: clamp(1.25rem, 3.5vw, 2.25rem);
+        --h3-size: clamp(1.1rem, 2.5vw, 1.75rem);
+        --hero-number-size: clamp(2.5rem, 7vw, 5.5rem);
+        --stat-number-size: clamp(1.75rem, 4vw, 3.5rem);
+    }
+
+    .timeline {
+        padding-left: 1.5rem;
+    }
+}
+
+/* Very short viewports (split-screen, small laptops) */
+@media (max-height: 600px) {
+    :root {
+        --slide-padding: clamp(0.75rem, 2.5vw, 2rem);
+        --content-gap: clamp(0.4rem, 1vw, 1rem);
+        --element-gap: clamp(0.3rem, 0.8vw, 0.75rem);
+        --title-size: clamp(1.25rem, 4vw, 2.5rem);
+        --h2-size: clamp(1.1rem, 3vw, 2rem);
+        --body-size: clamp(0.85rem, 1.3vw, 1.1rem);
+        --hero-number-size: clamp(2rem, 6vw, 4rem);
+        --stat-number-size: clamp(1.5rem, 3.5vw, 2.5rem);
+    }
+
+    .nav-dots,
+    .keyboard-hint,
+    .decorative,
+    .slide-footer {
+        display: none;
+    }
+
+    .timeline::before {
+        display: none;
+    }
+}
+
+/* Extremely short (landscape phones, embedded) */
+@media (max-height: 500px) {
+    :root {
+        --slide-padding: clamp(0.5rem, 2vw, 1.25rem);
+        --content-gap: clamp(0.3rem, 0.8vw, 0.75rem);
+        --element-gap: clamp(0.25rem, 0.6vw, 0.5rem);
+        --title-size: clamp(1.1rem, 3.5vw, 2rem);
+        --h2-size: clamp(1rem, 2.5vw, 1.5rem);
+        --h3-size: clamp(0.9rem, 2vw, 1.25rem);
+        --body-size: clamp(0.75rem, 1.1vw, 1rem);
+        --small-size: clamp(0.7rem, 1vw, 0.85rem);
+        --hero-number-size: clamp(1.5rem, 5vw, 3rem);
+    }
+
+    .card {
+        padding: clamp(0.5rem, 1.5vw, 1rem);
+    }
+
+    img,
+    .image-container {
+        max-height: min(35vh, 250px);
+    }
+}
+
+/* Narrow viewports (portrait phones, narrow windows) */
+@media (max-width: 600px) {
+    :root {
+        --title-size: clamp(1.5rem, 8vw, 3rem);
+        --h2-size: clamp(1.3rem, 6vw, 2.5rem);
+        --h3-size: clamp(1.1rem, 5vw, 2rem);
+        --body-size: clamp(0.9rem, 3.5vw, 1.25rem);
+        --slide-padding: clamp(1rem, 5vw, 2rem);
+    }
+
+    /* Collapse grids to single column */
+    .grid-2,
+    .grid-3,
+    .grid-4,
+    .grid-2x2,
+    .grid-2x3 {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
+
+    /* Stack split layouts vertically */
+    .split {
+        flex-direction: column;
+        gap: var(--element-gap);
+    }
+
+    .split-60-40 .split-left,
+    .split-60-40 .split-right,
+    .split-50-50 .split-left,
+    .split-50-50 .split-right,
+    .split-40-60 .split-left,
+    .split-40-60 .split-right,
+    .split-70-30 .split-left,
+    .split-70-30 .split-right {
+        flex: none;
+        width: 100%;
+    }
+
+    /* Reduce reveal transform distances for small screens */
+    .reveal { transform: translateY(20px); }
+    .reveal-left { transform: translateX(-30px); }
+    .reveal-right { transform: translateX(30px); }
+
+    /* Hide nav dots on narrow screens (touch-based scroll) */
+    .nav-dots {
+        display: none;
+    }
+
+    .slide-counter {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+/* Medium width (tablets, small desktops) */
+@media (max-width: 900px) and (min-width: 601px) {
+    .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-2x3 {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: auto;
+    }
+}
+
+
+/* ===========================================
+   ACCESSIBILITY: REDUCED MOTION
+   Respects user preference for less animation
+   =========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.2s !important;
+        transition-delay: 0s !important;
+    }
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    /* Make all reveal elements immediately visible */
+    .reveal,
+    .reveal-scale,
+    .reveal-left,
+    .reveal-right,
+    .reveal-blur,
+    .reveal-fade,
+    .reveal-flip,
+    .reveal-down,
+    .reveal-zoom-blur {
+        opacity: 1;
+        transform: none;
+        filter: none;
+    }
+
+    /* Disable continuous animations */
+    .animate-pulse-glow,
+    .animate-float,
+    .animate-shimmer,
+    .animate-rotate-slow {
+        animation: none;
+    }
+
+    /* Keep progress bar functional but instant */
+    .progress-bar {
+        transition: transform 0.01ms linear;
+    }
+
+    /* Simplify nav dot transitions */
+    .nav-dot {
+        transition: none;
+    }
+}
+
+
+/* ===========================================
+   ACCESSIBILITY: HIGH CONTRAST
+   =========================================== */
+
+@media (prefers-contrast: high) {
+    .nav-dot {
+        border-width: 3px;
+    }
+
+    .nav-dot.active {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
+    .progress-bar {
+        height: 4px;
+    }
+
+    .stat-label,
+    .caption,
+    .slide-footer {
+        opacity: 1;
+    }
+
+    .decorative,
+    .decorative-blob,
+    .decorative-grid {
+        display: none;
+    }
+}
+
+
+/* ===========================================
+   UTILITY CLASSES
+   =========================================== */
+
+/* Visibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Flex utilities */
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.gap-sm { gap: var(--element-gap); }
+.gap-md { gap: var(--content-gap); }
+.gap-lg { gap: calc(var(--content-gap) * 1.5); }
+
+/* Text alignment */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+/* Overflow control */
+.overflow-hidden { overflow: hidden; }
+.overflow-auto { overflow: auto; }
+
+/* Width constraints */
+.w-full { width: 100%; }
+.max-w-narrow { max-width: min(75vw, 700px); }
+.max-w-medium { max-width: min(85vw, 1000px); }
+.max-w-wide { max-width: min(95vw, 1400px); }
+.mx-auto { margin-inline: auto; }
+
+/* Opacity */
+.opacity-50 { opacity: 0.5; }
+.opacity-70 { opacity: 0.7; }
+.opacity-80 { opacity: 0.8; }

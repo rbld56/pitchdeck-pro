@@ -1,8 +1,26 @@
-# HTML Presentation Template (PDF-Optimized)
+# HTML Presentation Template
 
 **CRITICAL: This is your working example.** Copy this structure as your base. Extend with more slides. Do NOT start from scratch. Do NOT use inline `style=""` attributes. Do NOT invent your own CSS variables.
 
-## Complete Working Example: 3 Slides
+## Choose Your Mode
+
+| | PDF Mode | HTML Interactive Mode |
+|---|---|---|
+| **CSS Base** | `slide-base.css` | `slide-base-html.css` |
+| **Slide Dimensions** | Fixed 1920x1080px | Viewport 100vw x 100vh |
+| **Font Sizes** | Fixed px (32px body, 56px titles) | clamp() responsive |
+| **Navigation** | Single-slide preview + Print to PDF | Scroll-snap + keyboard + touch |
+| **Animations** | Disabled in print, preview-only | **Required** — reveal, counter, parallax |
+| **Progress/Nav** | Hidden in print | Progress bar + nav dots |
+| **Responsive** | No (fixed) | Yes (breakpoints 700/600/500px) |
+| **Use For** | Investor email, DocSend, print | Live demo, website, screen-share |
+
+**PDF Mode:** Use the example below (fixed 1920x1080, slide-base.css).
+**HTML Mode:** Same structure but replace `slide-base.css` with `slide-base-html.css`, replace fixed `px` font sizes with `clamp()` values from the preset's HTML overrides, enable full JS controller with scroll-snap, and mark ALL content elements with `.reveal` classes. Read [animation-patterns.md](animation-patterns.md) for all available animation classes.
+
+---
+
+## PDF Mode: Complete Working Example (3 Slides)
 
 This example uses the "HealthTech Clean" preset. When generating, replace the `:root` variables with the user's chosen preset from STYLE_PRESETS.md.
 

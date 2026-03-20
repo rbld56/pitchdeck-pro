@@ -12,32 +12,41 @@ Generate PDF-optimized pitch decks with 2026 design standards. Single-file HTML 
 **Note:** MCP tools (Canva, HuggingFace, Mermaid) in `allowed-tools` are optional. The plugin works fully with HTML/CSS-only generation. MCP graphics are only used when the corresponding connectors are configured AND the user opts in during Phase 1.
 
 ## Core Principles
-1. **PDF-First** -- Fixed 16:9 (1920x1080px), @media print, design must work without animation
+1. **Dual-Mode** -- PDF (fixed 16:9, print-ready, static) OR HTML Interactive (responsive, animated, scroll-nav)
 2. **150-Second Rule** -- Investors spend <=150 seconds. Every slide passes the "Icon-and-Number" test (viewer should grasp the slide from title, one key icon, and one isolated metric alone)
 3. **Anti-AI-Slop** -- Distinctive, human-crafted aesthetics. See [ANTI_PATTERNS.md](references/ANTI_PATTERNS.md)
 4. **Show, Don't Tell** -- Generate visual previews for style discovery, don't ask abstract questions
 
 ## NON-NEGOTIABLE RULES
 
-Violating ANY of these produces unacceptable output. These rules are absolute.
+Violating ANY of these produces unacceptable output. These rules are absolute and apply to BOTH modes.
 
-### Font Sizes (1920x1080px fixed dimensions)
-ABSOLUTE MINIMUMS — going below makes the deck unreadable at presentation scale:
+### Font Sizes
+
+**PDF Mode (1920x1080px fixed):**
 - Hero/metric numbers: **96-120px**
 - Slide titles (h2): **56-72px**
 - Body text, bullets, table cells: **32px**
 - Labels, captions, sources: **24px**
-- **NOTHING below 20px. Ever.** Not footnotes, not source citations, not badge text.
+- **NOTHING below 20px. Ever.**
 
-### CSS Architecture
+**HTML Interactive Mode (viewport-responsive):**
+- Hero/metric numbers: **clamp(3rem, 8vw, 7.5rem)**
+- Slide titles (h2): **clamp(1.75rem, 4vw, 3.5rem)**
+- Body text: **clamp(0.95rem, 1.5vw, 1.5rem)**
+- Labels/captions: **clamp(0.7rem, 1vw, 0.95rem)**
+- All sizes via `clamp()` — responsive but never unreadable
+
+### CSS Architecture (both modes)
 - **MUST** copy the chosen preset's ENTIRE `:root` block from [STYLE_PRESETS.md](references/STYLE_PRESETS.md) into `<style>`
-- **MUST** include the FULL contents of [slide-base.css](templates/slide-base.css) in `<style>`
+- **PDF Mode:** Include FULL [slide-base.css](templates/slide-base.css) (fixed 1920x1080, @media print)
+- **HTML Mode:** Include FULL [slide-base-html.css](templates/slide-base-html.css) (viewport, scroll-snap, animations)
 - **MUST** use `--color-*` CSS variables from the preset for ALL colors — never hardcoded hex in HTML
 - **MUST** use CSS classes from [SLIDE_TYPES.md](references/SLIDE_TYPES.md) — NOT inline `style=""` attributes
 - Inline `style=""` is **FORBIDDEN** except for one-off positioning (top/left) or chart bar widths
 - Every slide **MUST** have `class="slide [type]-slide"` (e.g., `class="slide cover-slide"`)
 
-### Visual Quality
+### Visual Quality (both modes)
 - **NEVER** use `#FFFFFF` as background. Use the preset's `--color-bg` (off-white/dark)
 - **NEVER** use `#000000` as text. Use `--color-text-primary` (near-black)
 - **MUST** use 2 fonts: Display font for headlines + Body font for text (from the preset's font pairing)
@@ -45,7 +54,16 @@ ABSOLUTE MINIMUMS — going below makes the deck unreadable at presentation scal
 - **MUST** include breathing room slides (quote, single stat, or section divider) every 3-4 content slides
 - Accent color used consistently on key metrics and CTAs only — not on every element
 
-### Content Density
+### HTML Mode Specific
+- Animations are **EXPECTED and REQUIRED** — not optional. Use reveal, scale, stagger, counter animations
+- **MUST** include scroll-snap navigation (keyboard + wheel + touch)
+- **MUST** include progress bar (scroll-linked) + nav dots
+- **MUST** include `prefers-reduced-motion` support
+- Read [animation-patterns.md](templates/animation-patterns.md) for available animation classes
+- Viewport fitting: every slide `height: 100vh; height: 100dvh; overflow: hidden`
+- Responsive breakpoints for height (700px, 600px, 500px) and width (600px)
+
+### Content Density (both modes)
 - Max **30 words** body text per slide (presenter mode) / **75 words** (async/PDF)
 - Max **6 bullet points** per slide
 - If content exceeds limits: **SPLIT into multiple slides**, never cram
@@ -70,8 +88,9 @@ Determine what the user wants:
 2. **Industry** (header: "Industry"): AI/ML / Fintech / HealthTech / SaaS / Consumer / DeepTech / Other
 3. **Structure** (header: "Structure"): YC (10-12 slides) / Sequoia (15-20) / a16z (Insight-driven) / Custom
 4. **Content** (header: "Content"): All content ready / Rough notes / Topic only — if "Topic only", generate content suggestions and draft slide text before proceeding to Phase 2
-5. **Generation Path** (header: "Path"): HTML->PDF (default) / Canva-Native / Hybrid (recommended)
-6. **AI Graphics** (header: "Graphics"): Yes (Canva + HF for visuals) / Canva only / CSS/SVG only / None
+5. **Output Mode** (header: "Mode"): PDF (print-optimized, fixed dimensions, static — for investor email, DocSend) / HTML Interactive (animated, scroll-nav, responsive — for live demo, website, screen-share)
+6. **Generation Path** (header: "Path"): HTML-generated (default) / Canva-Native / Hybrid (recommended)
+7. **AI Graphics** (header: "Graphics"): Yes (Canva + HF for visuals) / Canva only / CSS/SVG only / None
 
 If user has content, ask them to share it. If they selected Canva-Native or Hybrid with Brand Kit, call `list-brand-kits`.
 
@@ -115,10 +134,12 @@ Ask which preview they prefer. If "Mix elements", ask specifics.
 Read these files before generating:
 - [SLIDE_TYPES.md](references/SLIDE_TYPES.md) -- Slide archetypes with HTML/CSS templates
 - [VC_STRUCTURES.md](references/VC_STRUCTURES.md) -- Chosen VC template slide order
-- [slide-base.css](templates/slide-base.css) -- Mandatory PDF-optimized CSS base
-- [html-template.md](templates/html-template.md) -- HTML architecture and JS
+- **PDF Mode:** [slide-base.css](templates/slide-base.css) -- Fixed 1920x1080, @media print
+- **HTML Mode:** [slide-base-html.css](templates/slide-base-html.css) -- Viewport, scroll-snap, animations
+- [html-template.md](templates/html-template.md) -- HTML architecture + JS (has examples for BOTH modes)
 - [DATA_VISUALIZATION.md](references/DATA_VISUALIZATION.md) -- Chart and stat card patterns
 - [AUDIENCE_GUIDE.md](references/AUDIENCE_GUIDE.md) -- Audience-specific adaptations
+- **HTML Mode:** [animation-patterns.md](templates/animation-patterns.md) -- Full animation reference (REQUIRED)
 - [MCP_GRAPHICS_GUIDE.md](references/MCP_GRAPHICS_GUIDE.md) -- If using MCP graphics
 
 ### Generation Paths
@@ -172,14 +193,21 @@ Requires: `pip install python-pptx` (install if not available)
 
 ## Phase 5: Delivery
 
-1. Open HTML preview in browser
-2. **PDF Export options:**
-   - Browser: File -> Print -> Save as PDF (landscape, no margins)
-   - If Canva-Native: `export-design` (format: pdf)
-   - Script: `npx playwright pdf` or browser automation
-3. Clean up `.claude-design/slide-previews/` if exists
-4. Show Pre-Send Checklist -- see [AUDIENCE_GUIDE.md](references/AUDIENCE_GUIDE.md)
-5. Summarize: file location, style, slide count, export instructions
+### PDF Mode Delivery:
+1. Open HTML preview in browser (scaling via transform)
+2. **PDF Export:** Browser: File -> Print -> Save as PDF (landscape, no margins)
+3. Alternative: Canva `export-design` (pdf) or `npx playwright pdf`
+
+### HTML Interactive Mode Delivery:
+1. Open in browser — this IS the final product
+2. Verify: scroll-snap navigation, animations, responsive resize, nav dots, progress bar
+3. Test keyboard (arrows, space), mouse wheel, and touch swipe
+4. Test `prefers-reduced-motion` (animations should disable gracefully)
+
+### Both Modes:
+5. Clean up `.claude-design/slide-previews/` if exists
+6. Show Pre-Send Checklist -- see [AUDIENCE_GUIDE.md](references/AUDIENCE_GUIDE.md)
+7. Summarize: file location, style, slide count, mode, navigation instructions
 
 ---
 
@@ -194,7 +222,8 @@ Requires: `pip install python-pptx` (install if not available)
 | [AUDIENCE_GUIDE.md](references/AUDIENCE_GUIDE.md) | VC vs B2B vs Board adaptation | Phase 1, 5 |
 | [ANTI_PATTERNS.md](references/ANTI_PATTERNS.md) | AI-slop avoidance guide | Always |
 | [MCP_GRAPHICS_GUIDE.md](references/MCP_GRAPHICS_GUIDE.md) | Canva/HF/Mermaid integration | Phase 3 (if graphics) |
-| [slide-base.css](templates/slide-base.css) | Mandatory CSS base | Phase 3 |
-| [html-template.md](templates/html-template.md) | HTML architecture + JS | Phase 3 |
-| [animation-patterns.md](templates/animation-patterns.md) | Optional CSS animations | Phase 3 (HTML only) |
+| [slide-base.css](templates/slide-base.css) | PDF mode CSS base (fixed 1920x1080) | Phase 3 (PDF) |
+| [slide-base-html.css](templates/slide-base-html.css) | HTML mode CSS base (viewport, scroll-snap, animations) | Phase 3 (HTML) |
+| [html-template.md](templates/html-template.md) | HTML architecture + JS (both modes) | Phase 3 |
+| [animation-patterns.md](templates/animation-patterns.md) | Animation reference (required for HTML mode) | Phase 3 (HTML) |
 | [scripts/extract-pptx.py](scripts/extract-pptx.py) | PPT extraction | Phase 4 |
