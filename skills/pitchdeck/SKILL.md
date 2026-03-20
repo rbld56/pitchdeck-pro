@@ -1,15 +1,15 @@
 ---
 name: pitchdeck
 version: 1.0.0
-description: Activate when the user wants to create a pitch deck, build investor slides, design a fundraising presentation, make a board deck, convert a PowerPoint to a modern pitch, or generate a startup presentation. Covers VC-structure templates (YC, Sequoia, a16z), 15 industry-specific design presets, and MCP-powered graphics via Canva, HuggingFace, and Mermaid. Outputs PDF-ready single-file HTML with 2026 design standards.
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion, WebFetch, mcp__claude_ai_Canva__generate-design, mcp__claude_ai_Canva__generate-design-structured, mcp__claude_ai_Canva__request-outline-review, mcp__claude_ai_Canva__create-design-from-candidate, mcp__claude_ai_Canva__export-design, mcp__claude_ai_Canva__upload-asset-from-url, mcp__claude_ai_Canva__list-brand-kits, mcp__claude_ai_Canva__start-editing-transaction, mcp__claude_ai_Canva__perform-editing-operations, mcp__claude_ai_Canva__commit-editing-transaction, mcp__claude_ai_Canva__get-assets, mcp__claude_ai_Canva__get-design, mcp__claude_ai_Canva__get-design-pages, mcp__claude_ai_Canva__get-export-formats, mcp__claude_ai_Hugging_Face__dynamic_space, mcp__claude_ai_Hugging_Face__space_search, mcp__claude_ai_Mermaid_Chart__validate_and_render_mermaid_diagram
+description: Activate when the user wants to create a pitch deck, build investor slides, design a fundraising presentation, make a board deck, convert a PowerPoint to a modern pitch, or generate a startup presentation. Covers VC-structure templates (YC, Sequoia, a16z), 15 industry-specific design presets, and MCP-powered graphics via Canva, Nano Banana 2 (Gemini), FLUX.2, and Google Whisk. Outputs PDF-ready single-file HTML with 2026 design standards.
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion, WebFetch, mcp__claude_ai_Canva__generate-design, mcp__claude_ai_Canva__generate-design-structured, mcp__claude_ai_Canva__request-outline-review, mcp__claude_ai_Canva__create-design-from-candidate, mcp__claude_ai_Canva__export-design, mcp__claude_ai_Canva__upload-asset-from-url, mcp__claude_ai_Canva__list-brand-kits, mcp__claude_ai_Canva__start-editing-transaction, mcp__claude_ai_Canva__perform-editing-operations, mcp__claude_ai_Canva__commit-editing-transaction, mcp__claude_ai_Canva__get-assets, mcp__claude_ai_Canva__get-design, mcp__claude_ai_Canva__get-design-pages, mcp__claude_ai_Canva__get-export-formats, mcp__plugin_playwright_playwright__browser_navigate, mcp__plugin_playwright_playwright__browser_click, mcp__plugin_playwright_playwright__browser_snapshot, mcp__plugin_playwright_playwright__browser_file_upload, mcp__plugin_playwright_playwright__browser_take_screenshot, mcp__plugin_playwright_playwright__browser_wait_for
 ---
 
 # Pitchdeck Pro
 
 Generate PDF-optimized pitch decks with 2026 design standards. Single-file HTML -> PDF export.
 
-**Note:** MCP tools (Canva, HuggingFace, Mermaid) in `allowed-tools` are optional. The plugin works fully with HTML/CSS-only generation. MCP graphics are only used when the corresponding connectors are configured AND the user opts in during Phase 1.
+**Note:** MCP tools (Canva) and scripts (NanoBanana2, FLUX.2) in `allowed-tools` are optional. The plugin works fully with HTML/CSS-only generation. MCP graphics and AI image scripts are only used when the corresponding API keys/connectors are configured AND the user opts in during Phase 1. Google Whisk requires Playwright browser automation.
 
 ## Core Principles
 1. **Dual-Mode** -- PDF (fixed 16:9, print-ready, static) OR HTML Interactive (responsive, animated, scroll-nav)
@@ -90,9 +90,9 @@ Determine what the user wants:
 4. **Content** (header: "Content"): All content ready / Rough notes / Topic only — if "Topic only", generate content suggestions and draft slide text before proceeding to Phase 2
 5. **Output Mode** (header: "Mode"): PDF (print-optimized, fixed dimensions, static — for investor email, DocSend) / HTML Interactive (animated, scroll-nav, responsive — for live demo, website, screen-share)
 6. **Generation Path** (header: "Path"): HTML-generated (default) / Canva-Native / Hybrid (recommended)
-7. **AI Graphics** (header: "Graphics"): Yes (Canva + HF for visuals) / Canva only / CSS/SVG only / None
+7. **AI Graphics** (header: "Graphics"): Yes (Canva + NanoBanana2/FLUX.2/Whisk for visuals) / Canva only / AI Scripts only (NanoBanana2/FLUX.2) / CSS/SVG only / None
 
-If user has content, ask them to share it. If they selected Canva-Native or Hybrid with Brand Kit, call `list-brand-kits`.
+If user has content, ask them to share it. If they selected Canva-Native or Hybrid with Brand Kit, call `list-brand-kits`. If AI Scripts selected, verify `GEMINI_API_KEY` and/or `BFL_API_KEY` are set.
 
 **Remember choices -- they control which reference files and MCP tools are loaded in later phases.**
 
@@ -122,7 +122,7 @@ Audience influences preset recommendation:
 ### Step 2.2: Generate 3 Style Previews
 Based on mood + audience + industry, generate 3 single-slide HTML previews. Save to `.claude-design/slide-previews/`. Open each automatically.
 
-If AI Graphics enabled: optionally use `mcp-tools/Qwen-Image-Fast` for quick atmospheric mockups in previews.
+If AI Graphics enabled: optionally use `generate-image-nanobanana.py` for quick atmospheric mockups in previews (fast, cheap).
 
 ### Step 2.3: User Picks
 Ask which preview they prefer. If "Mix elements", ask specifics.
@@ -145,20 +145,21 @@ Read these files before generating:
 ### Generation Paths
 
 **Path A: HTML->PDF (default)**
-Generate single-file HTML with fixed 16:9 dimensions. Include @media print CSS. If AI graphics enabled, generate Canva infographics / HF images for specific slides and embed as assets.
+Generate single-file HTML with fixed 16:9 dimensions. Include @media print CSS. If AI graphics enabled, generate Canva infographics / NanoBanana2/FLUX.2 images for specific slides and embed as assets.
 
 **Path B: Canva-Native**
 Use `request-outline-review` with slide outline -> user reviews -> `generate-design-structured` -> user edits in Canva -> `export-design` (pdf).
 
 **Path C: Hybrid (recommended)**
-Generate HTML skeleton for layout control. For complex slides (Market Size, How It Works, Traction), generate Canva infographics via `generate-design` and embed exported PNGs. Use HF Spaces for atmospheric backgrounds. Use Mermaid for flowcharts/diagrams.
+Generate HTML skeleton for layout control. For complex slides (Market Size, How It Works, Traction), generate Canva infographics via `generate-design` and embed exported PNGs. Use NanoBanana2/FLUX.2 for atmospheric backgrounds and hero visuals. Use Google Whisk for style-remixed visuals. Diagrams are built as inline CSS/SVG.
 
 ### MCP Asset Pipeline (Paths A & C)
 1. Analyze which slides need generated graphics
 2. For infographics/charts: `generate-design` (type: infographic/report) -> user picks candidate -> `create-design-from-candidate` -> `export-design` (png) -> embed in HTML
-3. For AI images: `dynamic_space` invoke (FLUX.1-Krea-dev or Qwen-Image) -> embed result
-4. For diagrams: `validate_and_render_mermaid_diagram` -> embed SVG
-5. For logos: `not-lain/background-removal` if needed
+3. For AI images (hero, backgrounds, product visuals): `python scripts/generate-image-nanobanana.py` (fast, good text rendering) or `python scripts/generate-image-flux.py` (photorealistic quality) -> embed result PNG
+4. For style-remixed visuals: Google Whisk via Playwright browser automation (navigate to labs.google/fx/tools/whisk, upload subject/scene/style images, download result)
+5. For diagrams: Build as inline CSS/SVG within the HTML (no external tool needed)
+6. For logos: Ask user to provide transparent PNG, or use CSS background-removal techniques
 
 ### Key Requirements
 - Single self-contained HTML file, all CSS/JS inline
@@ -221,7 +222,7 @@ Requires: `pip install python-pptx` (install if not available)
 | [DATA_VISUALIZATION.md](references/DATA_VISUALIZATION.md) | Charts, stat cards, metrics | Phase 3 |
 | [AUDIENCE_GUIDE.md](references/AUDIENCE_GUIDE.md) | VC vs B2B vs Board adaptation | Phase 1, 5 |
 | [ANTI_PATTERNS.md](references/ANTI_PATTERNS.md) | AI-slop avoidance guide | Always |
-| [MCP_GRAPHICS_GUIDE.md](references/MCP_GRAPHICS_GUIDE.md) | Canva/HF/Mermaid integration | Phase 3 (if graphics) |
+| [MCP_GRAPHICS_GUIDE.md](references/MCP_GRAPHICS_GUIDE.md) | Canva/NanoBanana2/FLUX.2/Whisk integration | Phase 3 (if graphics) |
 | [slide-base.css](templates/slide-base.css) | PDF mode CSS base (fixed 1920x1080) | Phase 3 (PDF) |
 | [slide-base-html.css](templates/slide-base-html.css) | HTML mode CSS base (viewport, scroll-snap, animations) | Phase 3 (HTML) |
 | [html-template.md](templates/html-template.md) | HTML architecture + JS (both modes) | Phase 3 |
