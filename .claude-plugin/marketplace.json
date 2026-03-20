@@ -7,10 +7,7 @@
     {
       "name": "pitchdeck-pro",
       "description": "State-of-the-art pitch deck generator with 2026 design best practices, VC-structure templates, and AI-powered graphics.",
-      "source": {
-        "source": "github",
-        "repo": "rbld56/pitchdeck-pro"
-      }
+      "source": "."
     }
   ]
 }
