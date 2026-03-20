@@ -1,6 +1,6 @@
 {
   "name": "pitchdeck-pro",
-  "version": "0.1.0",
+  "version": "1.3.0",
   "description": "State-of-the-art pitch deck generator with 2026 design best practices, VC-structure templates, and MCP-powered graphics (Canva, Nano Banana 2/Gemini, FLUX.2, Google Whisk). Generates PDF-optimized and interactive HTML presentations for investors, customers, and board presentations.",
   "author": {
     "name": "Andre / DevOnTap.ai",

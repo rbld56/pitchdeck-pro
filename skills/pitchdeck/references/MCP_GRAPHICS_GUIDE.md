@@ -42,7 +42,7 @@ Guide for integrating MCP tools and AI image generation scripts for pitch deck s
 
 **When to use:** Hero images, product visuals, text-on-image graphics, atmospheric backgrounds, quick style mockups. Best for speed, cost-efficiency, and precise text rendering in images.
 
-**Model:** `gemini-3.1-flash-image-preview` via Google Gemini API
+**Model:** `gemini-2.0-flash-preview-image-generation` via Google Gemini API
 
 **Requires:** `GEMINI_API_KEY` environment variable (get from [AI Studio](https://aistudio.google.com/))
 

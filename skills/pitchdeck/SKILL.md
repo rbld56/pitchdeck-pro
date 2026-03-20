@@ -1,6 +1,6 @@
 ---
 name: pitchdeck
-version: 1.0.0
+version: 1.3.0
 description: Activate when the user wants to create a pitch deck, build investor slides, design a fundraising presentation, make a board deck, convert a PowerPoint to a modern pitch, or generate a startup presentation. Covers VC-structure templates (YC, Sequoia, a16z), 15 industry-specific design presets, and MCP-powered graphics via Canva, Nano Banana 2 (Gemini), FLUX.2, and Google Whisk. Outputs PDF-ready single-file HTML with 2026 design standards.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion, WebFetch, mcp__claude_ai_Canva__generate-design, mcp__claude_ai_Canva__generate-design-structured, mcp__claude_ai_Canva__request-outline-review, mcp__claude_ai_Canva__create-design-from-candidate, mcp__claude_ai_Canva__export-design, mcp__claude_ai_Canva__upload-asset-from-url, mcp__claude_ai_Canva__list-brand-kits, mcp__claude_ai_Canva__start-editing-transaction, mcp__claude_ai_Canva__perform-editing-operations, mcp__claude_ai_Canva__commit-editing-transaction, mcp__claude_ai_Canva__get-assets, mcp__claude_ai_Canva__get-design, mcp__claude_ai_Canva__get-design-pages, mcp__claude_ai_Canva__get-export-formats, mcp__plugin_playwright_playwright__browser_navigate, mcp__plugin_playwright_playwright__browser_click, mcp__plugin_playwright_playwright__browser_snapshot, mcp__plugin_playwright_playwright__browser_file_upload, mcp__plugin_playwright_playwright__browser_take_screenshot, mcp__plugin_playwright_playwright__browser_wait_for
 ---

@@ -72,7 +72,24 @@ def poll_result(api_key: str, task_id: str, max_wait: int = 120) -> str:
 
     start_time = time.time()
     while time.time() - start_time < max_wait:
-        response = requests.get(endpoint, params={"id": task_id}, headers=headers, timeout=30)
+        try:
+            response = requests.get(endpoint, params={"id": task_id}, headers=headers, timeout=30)
+        except requests.RequestException as e:
+            print(f"  Warning: Request error during polling: {e}", file=sys.stderr)
+            time.sleep(3)
+            continue
+
+        if response.status_code in (429, 500, 502, 503, 504):
+            retries = getattr(poll_result, '_retries', 0) + 1
+            if retries > 3:
+                print(f"Error: Polling failed after 3 retries ({response.status_code})", file=sys.stderr)
+                sys.exit(1)
+            poll_result._retries = retries
+            wait = min(3 * retries, 10)
+            print(f"  Warning: {response.status_code} — retrying in {wait}s (attempt {retries}/3)...")
+            time.sleep(wait)
+            continue
+
         if response.status_code != 200:
             print(f"Error: Poll request failed ({response.status_code}): {response.text}", file=sys.stderr)
             sys.exit(1)
